@@ -1,0 +1,34 @@
+---
+- name: Configure Filebeat on web servers
+  hosts: webservers
+  become: true
+  tasks:
+  - name: Add Elastic repository
+    apt_repository:
+      repo: deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main
+      state: present
+
+  - name: Install Filebeat
+    apt:
+      name: filebeat
+      state: present
+      update_cache: yes
+
+  - name: Configure Filebeat
+    template:
+      src: ../templates/filebeat.yml.j2
+      dest: /etc/filebeat/filebeat.yml
+      mode: '0644'
+    notify: restart filebeat
+
+  - name: Start and enable Filebeat
+    systemd:
+      name: filebeat
+      state: started
+      enabled: yes
+
+  handlers:
+  - name: restart filebeat
+    systemd:
+      name: filebeat
+      state: restarted

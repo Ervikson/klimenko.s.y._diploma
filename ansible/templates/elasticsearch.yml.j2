@@ -1,0 +1,12 @@
+cluster.name: {{ cluster_name | default('es-cluster') }}
+node.name: {{ node_name | default('es-node-1') }}
+network.host: 0.0.0.0
+http.port: 9200
+
+# Настройки кластера (при необходимости)
+discovery.seed_hosts: {{ discovery_seed_hosts | default(['127.0.0.1']) }}
+cluster.initial_master_nodes: {{ initial_master_nodes | default([node_name]) }}
+
+# Путь к данным и логам
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch

@@ -1,0 +1,37 @@
+---
+- name: Configure nginx on webservers
+  hosts: webservers
+  become: True
+
+  tasks:
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: present
+      update_cache: yes
+
+  - name: Upload nginx config
+    template:
+      src: ../templates/nginx.conf.j2
+      dest: /etc/nginx/nginx.conf
+    notify: restart nginx
+
+  - name: Upload website files
+    copy:
+      src: ../files/website/
+      dest: /var/www/html/
+      owner: www-data
+      group: www-data
+      mode: '0644'
+
+  - name: Enable nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
+  handlers:
+  - name: restart nginx
+    service:
+      name: nginx
+      state: restarted

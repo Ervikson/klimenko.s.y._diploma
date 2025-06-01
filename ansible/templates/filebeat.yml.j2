@@ -1,0 +1,36 @@
+
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/nginx/access.log
+      - /var/log/nginx/error.log
+    fields:
+      log_type: nginx
+    fields_under_root: true
+
+# Опционально: включить модули nginx, если предпочитаете использовать их
+# filebeat.modules:
+#   - module: nginx
+#     access:
+#       enabled: true
+#     error:
+#       enabled: true
+
+output.elasticsearch:
+  hosts: ["http://192.168.1.4:9200"]
+
+# Настройки безопасности, если требуется
+# username: "{{ elasticsearch_user | default('') }}"
+# password: "{{ elasticsearch_password | default('') }}"
+
+setup.kibana:
+  host: "http://192.168.3.6 | 192.168.1.4:5601"
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat.log
+  keepfiles: 7
+  permissions: 0644
